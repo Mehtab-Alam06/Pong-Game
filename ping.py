@@ -14,7 +14,7 @@ game_over_sound = pygame.mixer.Sound("Sounds/game_win.mp3")
 
 WIDTH, HEIGHT = 1600, 900
 screen = pygame.display.set_mode((WIDTH, HEIGHT)) 
-pygame.display.set_caption("Pong Game")
+pygame.display.set_caption("Table Tennis")
 
 background_image = pygame.image.load("Images/playing_background.png")  
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))  
