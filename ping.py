@@ -1,22 +1,21 @@
+# Developing a PONG GAME using Python
+
 import pygame
 import random
 import sys
 
 pygame.init()
 
-# Load sounds
 bounce_sound = pygame.mixer.Sound("Sounds/bounce.mp3")
 score_sound = pygame.mixer.Sound("Sounds/score.wav")
 menu_sound = pygame.mixer.Sound("Sounds/main_menu.mp3") 
 pause_sound = pygame.mixer.Sound("Sounds/pause_screen.mp3")  
 game_over_sound = pygame.mixer.Sound("Sounds/game_win.mp3")  
 
-# Screen dimensions
 WIDTH, HEIGHT = 1600, 900
 screen = pygame.display.set_mode((WIDTH, HEIGHT)) 
 pygame.display.set_caption("Pong Game")
 
-# Load images
 background_image = pygame.image.load("Images/playing_background.png")  
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))  
 menu_image = pygame.image.load("Images/background.jpg")  
@@ -26,7 +25,6 @@ pause_image = pygame.transform.scale(pause_image, (WIDTH, HEIGHT))
 game_over_image = pygame.image.load("Images/background.jpg")  
 game_over_image = pygame.transform.scale(game_over_image, (WIDTH, HEIGHT)) 
 
-# Load fonts
 title_font = pygame.font.Font("Fonts/SuperPixel-m2L8j.ttf", 120)  
 menu_font = pygame.font.Font("Fonts/WowDino-G33vP.ttf", 50)  
 player_font = pygame.font.Font("Fonts/MightySouly-lxggD.ttf", 50)  
@@ -34,7 +32,6 @@ pause_font = pygame.font.Font("Fonts/KnightWarrior-w16n8.otf", 90)
 game_over_font = pygame.font.Font("Fonts/Juvanze-ovw9A.otf", 80) 
 score_font = pygame.font.Font("Fonts/Juvanze-ovw9A.otf", 60) 
 
-# Colors
 AMETHYST = (153, 102, 204)
 AQUAMARINE = (127, 255, 212)
 EMERALD = (80, 200, 120)
@@ -47,14 +44,10 @@ NEON_BLUE = AQUAMARINE
 NEON_PINK = RUBY
 DARK_PURPLE = AMETHYST
 
-# Paddle and ball dimensions
 PADDLE_WIDTH, PADDLE_HEIGHT = 20, 120
 BALL_RADIUS = 15
 
-# Game state variables
 left_score, right_score = 0, 0
-set_left_score, set_right_score = 0, 0  # Scores for sets
-current_set = 1
 game_started = False
 game_paused = False
 game_over = False
@@ -63,7 +56,6 @@ game_mode = "single_player"
 menu_options = ["Start Game", "AI Difficulty", "Mode", "Exit"]
 selected_option = 0
 
-# Paddles and ball
 left_paddle = pygame.Rect(50, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
 right_paddle = pygame.Rect(WIDTH - 70, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
 ball = pygame.Rect(WIDTH // 2 - BALL_RADIUS // 2, HEIGHT // 2 - BALL_RADIUS // 2, BALL_RADIUS, BALL_RADIUS)
@@ -75,10 +67,8 @@ def reset_ball():
 BALL_SPEED = reset_ball()
 
 def reset_game():
-    global left_score, right_score, set_left_score, set_right_score, current_set, game_paused, game_over, BALL_SPEED
+    global left_score, right_score, game_paused, game_over, BALL_SPEED
     left_score, right_score = 0, 0
-    set_left_score, set_right_score = 0, 0
-    current_set = 1
     game_paused = False
     game_over = False
     BALL_SPEED = reset_ball()
@@ -112,7 +102,7 @@ game_over_sound_played = False
 def draw_main_menu():
     global menu_sound_played 
     screen.blit(menu_image, (0, 0))  
-    title_text = title_font.render("Pong Game", True, CITRINE)
+    title_text = title_font.render("Table Tennis", True, CITRINE)
     screen.blit(title_text, (WIDTH // 2 - title_text.get_width() // 2, HEIGHT // 6 + 50)) 
 
     for i, option in enumerate(menu_options):
@@ -147,10 +137,10 @@ def draw_player_names():
 def draw_game_over_screen():
     global game_over_sound_played
     screen.blit(game_over_image, (0, 0))  
-    if set_left_score >= 2:
+    if left_score >= 2:
         winner_text = "Left Player Wins!"
         win_color = NEON_BLUE
-    elif set_right_score >= 2:
+    elif right_score >= 2:
         winner_text = "Right Player Wins!"
         win_color = NEON_PINK
 
@@ -178,6 +168,7 @@ def draw_pause_screen():
     menu_text = player_font.render("Press M to Return to Menu", True, NEON_BLUE)
 
     screen.blit(pause_text, (WIDTH // 2 - pause_text.get_width() // 2, HEIGHT // 3))
+
     screen.blit(continue_text, (WIDTH // 2 - continue_text.get_width() // 2, HEIGHT // 2 + 50))  
     screen.blit(exit_text, (WIDTH // 2 - exit_text.get_width() // 2, HEIGHT // 1.5 + 50))  
     screen.blit(menu_text, (WIDTH // 2 - menu_text.get_width() // 2, HEIGHT // 1.3 + 50)) 
@@ -187,6 +178,7 @@ def draw_pause_screen():
         pause_sound_played = True
 
     pygame.display.flip()
+
 
 running = True
 start_time = pygame.time.get_ticks()  
@@ -299,22 +291,8 @@ while running:
                 BALL_SPEED = reset_ball()
                 score_sound.play()
 
-            # Check for set wins
-            if left_score >= 2:
-                set_left_score += 21  # Award 21 points for winning the set
-                left_score = 0
-                right_score = 0
-                current_set += 1
-                if set_left_score >= 42:  # Player 1 wins the match
-                    game_over = True
-
-            if right_score >= 2:
-                set_right_score += 21  # Award 21 points for winning the set
-                left_score = 0
-                right_score = 0
-                current_set += 1
-                if set_right_score >= 42:  # Player 2 wins the match
-                    game_over = True
+            if left_score >= 2 or right_score >= 2:
+                game_over = True
 
             current_time = pygame.time.get_ticks()
             if current_time - start_time > speed_increment_time:
@@ -329,10 +307,9 @@ while running:
             draw_ball(ball)  
             pygame.draw.aaline(screen, WHITE, (WIDTH // 2, 0), (WIDTH // 2, HEIGHT))  
 
-            # Draw scores at the top
             score_box = pygame.Rect(WIDTH // 2 - 120, 10, 240, 60)  
             pygame.draw.rect(screen, BLACK, score_box)  
-            score_text = score_font.render(f"{set_left_score} - {set_right_score}", True, CITRINE)
+            score_text = score_font.render(f"{left_score} - {right_score}", True, CITRINE)
             screen.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, 20))
 
     pygame.display.flip()
